@@ -1,0 +1,28 @@
+{
+    "name": "finance-tracker",
+  "version": "1.0.0",
+  "description": "Personal Finance Tracker - Track income and expenses",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": ["finance", "expense-tracker", "budget"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "chart.js": "^4.5.1",
+    "connect-mongo": "^5.1.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-flash": "^0.0.2",
+    "express-handlebars": "^8.0.3",
+    "express-session": "^1.18.2",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.19.2",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12",
+    "passport-local": "^1.0.0"
+  }
+}

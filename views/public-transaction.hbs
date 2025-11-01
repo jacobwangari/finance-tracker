@@ -1,0 +1,61 @@
+<div class="mb-4">
+  <h2><i class="bi bi-eye"></i> All Transactions (Public View)</h2>
+  <p class="text-muted">This is a read-only view of all transactions in the database.</p>
+</div>
+
+{{#if transactions}}
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each transactions}}
+              <tr>
+                <td>{{user.name}}</td>
+                <td>{{formatDate date}}</td>
+                <td>
+                  <span class="badge {{#if (eq type 'income')}}bg-success{{else}}bg-danger{{/if}}">
+                    {{#if (eq type 'income')}}
+                      <i class="bi bi-arrow-up-circle"></i> Income
+                    {{else}}
+                      <i class="bi bi-arrow-down-circle"></i> Expense
+                    {{/if}}
+                  </span>
+                </td>
+                <td>{{category}}</td>
+                <td>{{description}}</td>
+                <td class="text-end">
+                  <strong class="{{#if (eq type 'income')}}text-success{{else}}text-danger{{/if}}">
+                    {{#if (eq type 'income')}}+{{else}}-{{/if}}{{formatCurrency amount}}
+                  </strong>
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{{else}}
+  <div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> No transactions available yet.
+  </div>
+{{/if}}
+
+<div class="mt-4 text-center">
+  {{#if user}}
+    <a href="/dashboard" class="btn btn-primary">Go to My Dashboard</a>
+  {{else}}
+    <p>Want to track your own finances? <a href="/auth/register">Sign up now</a></p>
+  {{/if}}
+</div>

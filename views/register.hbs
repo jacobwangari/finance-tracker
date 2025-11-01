@@ -1,0 +1,56 @@
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow">
+      <div class="card-body p-5">
+        <h2 class="text-center mb-4"><i class="bi bi-person-plus"></i> Register</h2>
+        
+        {{#if errors}}
+          {{#each errors}}
+            <div class="alert alert-danger">{{msg}}</div>
+          {{/each}}
+        {{/if}}
+
+        <form action="/auth/register" method="POST">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{name}}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" value="{{email}}" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            <small class="text-muted">At least 6 characters</small>
+          </div>
+
+          <div class="mb-3">
+            <label for="password2" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="password2" name="password2" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary w-100 mb-3">
+            <i class="bi bi-person-plus"></i> Register
+          </button>
+        </form>
+
+        <div class="text-center mb-3">
+          <span class="text-muted">OR</span>
+        </div>
+
+        <a href="/auth/github" class="btn btn-dark w-100">
+          <i class="bi bi-github"></i> Sign up with GitHub
+        </a>
+
+        <hr class="my-4">
+
+        <p class="text-center mb-0">
+          Already have an account? <a href="/auth/login">Login here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

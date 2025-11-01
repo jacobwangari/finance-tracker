@@ -1,0 +1,71 @@
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="mb-0"><i class="bi bi-pencil"></i> Edit Transaction</h3>
+      </div>
+      <div class="card-body">
+        <form action="/transactions/{{transaction._id}}?_method=PUT" method="POST">
+          <div class="mb-3">
+            <label for="type" class="form-label">Type</label>
+            <select class="form-select" id="type" name="type" required>
+              <option value="income" {{#if (eq transaction.type 'income')}}selected{{/if}}>Income</option>
+              <option value="expense" {{#if (eq transaction.type 'expense')}}selected{{/if}}>Expense</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category" required>
+              <optgroup label="Income Categories">
+                <option value="Salary" {{#if (eq transaction.category 'Salary')}}selected{{/if}}>Salary</option>
+                <option value="Freelance" {{#if (eq transaction.category 'Freelance')}}selected{{/if}}>Freelance</option>
+                <option value="Business" {{#if (eq transaction.category 'Business')}}selected{{/if}}>Business</option>
+                <option value="Investment" {{#if (eq transaction.category 'Investment')}}selected{{/if}}>Investment</option>
+                <option value="Gift" {{#if (eq transaction.category 'Gift')}}selected{{/if}}>Gift</option>
+                <option value="Other Income" {{#if (eq transaction.category 'Other Income')}}selected{{/if}}>Other Income</option>
+              </optgroup>
+              <optgroup label="Expense Categories">
+                <option value="Food & Dining" {{#if (eq transaction.category 'Food & Dining')}}selected{{/if}}>Food & Dining</option>
+                <option value="Transportation" {{#if (eq transaction.category 'Transportation')}}selected{{/if}}>Transportation</option>
+                <option value="Shopping" {{#if (eq transaction.category 'Shopping')}}selected{{/if}}>Shopping</option>
+                <option value="Entertainment" {{#if (eq transaction.category 'Entertainment')}}selected{{/if}}>Entertainment</option>
+                <option value="Bills & Utilities" {{#if (eq transaction.category 'Bills & Utilities')}}selected{{/if}}>Bills & Utilities</option>
+                <option value="Healthcare" {{#if (eq transaction.category 'Healthcare')}}selected{{/if}}>Healthcare</option>
+                <option value="Education" {{#if (eq transaction.category 'Education')}}selected{{/if}}>Education</option>
+                <option value="Travel" {{#if (eq transaction.category 'Travel')}}selected{{/if}}>Travel</option>
+                <option value="Personal" {{#if (eq transaction.category 'Personal')}}selected{{/if}}>Personal</option>
+                <option value="Other Expense" {{#if (eq transaction.category 'Other Expense')}}selected{{/if}}>Other Expense</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" id="amount" name="amount" step="0.01" min="0" value="{{transaction.amount}}" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" name="description" value="{{transaction.description}}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{transaction.date}}" required>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle"></i> Update Transaction
+            </button>
+            <a href="/transactions" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
