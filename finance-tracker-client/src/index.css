@@ -1,111 +1,311 @@
+/* ==========================================================================
+   Dark Theme — Finance Tracker
+   Custom palette layered on top of Bootstrap 5.3's built-in dark mode
+   ========================================================================== */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --ft-bg: #0f1117;
+  --ft-bg-elevated: #171a23;
+  --ft-bg-card: #1b1e29;
+  --ft-border: #2a2e3d;
+  --ft-text: #e6e8ec;
+  --ft-text-muted: #9096a8;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --ft-accent: #7c5cff;
+  --ft-accent-hover: #6a48f2;
+  --ft-accent-soft: rgba(124, 92, 255, 0.15);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --ft-income: #2ecf8e;
+  --ft-income-soft: rgba(46, 207, 142, 0.15);
+  --ft-expense: #ff5c7a;
+  --ft-expense-soft: rgba(255, 92, 122, 0.15);
+  --ft-balance: #4ea1ff;
+  --ft-warning: #ffb454;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* Tell Bootstrap to use its dark variant as the base */
+html {
+  color-scheme: dark;
 }
 
 body {
-  margin: 0;
+  background-color: var(--ft-bg);
+  color: var(--ft-text);
+  min-height: 100vh;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+/* ---- Navbar ---- */
+.navbar {
+  background: var(--ft-bg-elevated) !important;
+  border-bottom: 1px solid var(--ft-border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
+.navbar-brand,
+.nav-link {
+  color: var(--ft-text) !important;
+}
+
+.nav-link:hover {
+  color: var(--ft-accent) !important;
+}
+
+.dropdown-menu {
+  background-color: var(--ft-bg-card);
+  border: 1px solid var(--ft-border);
+}
+
+.dropdown-item {
+  color: var(--ft-text);
+}
+
+.dropdown-item:hover {
+  background-color: var(--ft-accent-soft);
+  color: var(--ft-text);
+}
+
+/* ---- Cards ---- */
+.card {
+  background-color: var(--ft-bg-card);
+  border: 1px solid var(--ft-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.card-header {
+  background-color: var(--ft-bg-elevated);
+  border-bottom: 1px solid var(--ft-border);
+  color: var(--ft-text);
+}
+
+/* ---- Buttons ---- */
+.btn-primary {
+  background-color: var(--ft-accent);
+  border-color: var(--ft-accent);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--ft-accent-hover);
+  border-color: var(--ft-accent-hover);
+}
+
+.btn-outline-primary {
+  color: var(--ft-accent);
+  border-color: var(--ft-accent);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--ft-accent);
+  color: #fff;
+}
+
+.btn-outline-light {
+  color: var(--ft-text);
+  border-color: var(--ft-border);
+}
+
+.btn-secondary {
+  background-color: #2f3444;
+  border-color: #2f3444;
+  color: var(--ft-text);
+}
+
+.btn-secondary:hover {
+  background-color: #3a3f52;
+  border-color: #3a3f52;
+}
+
+/* ---- Summary cards on dashboard (replace bg-success/bg-danger/bg-primary) ---- */
+.ft-stat-income {
+  background: linear-gradient(135deg, #1a3d33, #12291f);
+  border: 1px solid rgba(46, 207, 142, 0.3);
+  color: var(--ft-income);
+}
+
+.ft-stat-expense {
+  background: linear-gradient(135deg, #3d1a26, #291218);
+  border: 1px solid rgba(255, 92, 122, 0.3);
+  color: var(--ft-expense);
+}
+
+.ft-stat-balance {
+  background: linear-gradient(135deg, #1a2c3d, #121e29);
+  border: 1px solid rgba(78, 161, 255, 0.3);
+  color: var(--ft-balance);
+}
+
+.ft-stat-balance.negative {
+  background: linear-gradient(135deg, #3d301a, #292112);
+  border: 1px solid rgba(255, 180, 84, 0.3);
+  color: var(--ft-warning);
+}
+
+/* ---- Hero / jumbotron ---- */
+.ft-hero {
+  background: linear-gradient(135deg, #241a3d 0%, #12101f 100%);
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text);
+}
+
+/* ---- Tables ---- */
+.table {
+  color: var(--ft-text);
+  --bs-table-bg: transparent;
+}
+
+.table thead {
+  background-color: var(--ft-bg-elevated);
+}
+
+.table thead th {
+  color: var(--ft-text-muted);
+  border-bottom: 1px solid var(--ft-border);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: var(--ft-border);
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: var(--ft-accent-soft);
+  color: var(--ft-text);
+}
+
+/* ---- Badges ---- */
+.badge.bg-success {
+  background-color: var(--ft-income-soft) !important;
+  color: var(--ft-income) !important;
+  border: 1px solid rgba(46, 207, 142, 0.3);
   font-weight: 500;
-  color: var(--text-h);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.badge.bg-danger {
+  background-color: var(--ft-expense-soft) !important;
+  color: var(--ft-expense) !important;
+  border: 1px solid rgba(255, 92, 122, 0.3);
+  font-weight: 500;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+.text-success {
+  color: var(--ft-income) !important;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.text-danger {
+  color: var(--ft-expense) !important;
+}
+
+/* ---- Forms ---- */
+.form-control,
+.form-select {
+  background-color: var(--ft-bg-elevated);
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--ft-bg-elevated);
+  border-color: var(--ft-accent);
+  color: var(--ft-text);
+  box-shadow: 0 0 0 0.2rem var(--ft-accent-soft);
+}
+
+.form-control::placeholder {
+  color: var(--ft-text-muted);
+}
+
+.form-label {
+  color: var(--ft-text-muted);
+  font-weight: 500;
+}
+
+.input-group-text {
+  background-color: var(--ft-bg-elevated);
+  border: 1px solid var(--ft-border);
+  color: var(--ft-text-muted);
+}
+
+/* ---- Alerts ---- */
+.alert-success {
+  background-color: var(--ft-income-soft);
+  border: 1px solid rgba(46, 207, 142, 0.3);
+  color: var(--ft-income);
+}
+
+.alert-danger {
+  background-color: var(--ft-expense-soft);
+  border: 1px solid rgba(255, 92, 122, 0.3);
+  color: var(--ft-expense);
+}
+
+.alert-info {
+  background-color: var(--ft-accent-soft);
+  border: 1px solid rgba(124, 92, 255, 0.3);
+  color: var(--ft-accent);
+}
+
+/* ---- Modal ---- */
+.modal-content {
+  background-color: var(--ft-bg-card);
+  border: 1px solid var(--ft-border);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--ft-border);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ---- List group (recent transactions) ---- */
+.list-group-item {
+  background-color: transparent;
+  border-color: var(--ft-border);
+  color: var(--ft-text);
+}
+
+/* ---- Footer ---- */
+footer {
+  background-color: var(--ft-bg-elevated) !important;
+  border-top: 1px solid var(--ft-border);
+  color: var(--ft-text-muted);
+}
+
+/* ---- Text helpers ---- */
+.text-muted {
+  color: var(--ft-text-muted) !important;
+}
+
+/* ---- Feature icons on home page ---- */
+.ft-icon-accent { color: var(--ft-accent) !important; }
+.ft-icon-income { color: var(--ft-income) !important; }
+.ft-icon-balance { color: var(--ft-balance) !important; }
+
+/* ---- Scrollbar (nice-to-have for dark UIs) ---- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ft-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ft-border);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ft-accent);
 }

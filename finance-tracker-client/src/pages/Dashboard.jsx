@@ -10,10 +10,24 @@ const currency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', curr
 const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
 const COLORS = [
-  'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
-  'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
-  'rgba(201, 203, 207, 0.8)', 'rgba(255, 99, 255, 0.8)', 'rgba(99, 255, 132, 0.8)', 'rgba(132, 99, 255, 0.8)'
+  '#7c5cff', '#4ea1ff', '#2ecf8e', '#ff5c7a', '#ffb454',
+  '#ff8fd8', '#5ce1e6', '#c4a1ff', '#f2ff5c', '#5cffb4'
 ];
+
+const chartOptions = {
+  plugins: {
+    legend: {
+      labels: { color: '#e6e8ec' }
+    },
+    tooltip: {
+      backgroundColor: '#1b1e29',
+      titleColor: '#e6e8ec',
+      bodyColor: '#e6e8ec',
+      borderColor: '#2a2e3d',
+      borderWidth: 1
+    }
+  }
+};
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -35,6 +49,7 @@ export default function Dashboard() {
     datasets: [{
       data: values,
       backgroundColor: COLORS.slice(0, labels.length),
+      borderColor: '#1b1e29',
       borderWidth: 2
     }]
   };
@@ -45,19 +60,19 @@ export default function Dashboard() {
 
       <div className="row mb-4">
         <div className="col-md-4">
-          <div className="card bg-success text-white p-3">
+          <div className="card ft-stat-income p-3">
             <h5><i className="bi bi-arrow-up-circle"></i> Total Income</h5>
             <h2 className="mb-0">{currency(totalIncome)}</h2>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card bg-danger text-white p-3">
+          <div className="card ft-stat-expense p-3">
             <h5><i className="bi bi-arrow-down-circle"></i> Total Expenses</h5>
             <h2 className="mb-0">{currency(totalExpenses)}</h2>
           </div>
         </div>
         <div className="col-md-4">
-          <div className={`card text-white p-3 ${balance >= 0 ? 'bg-primary' : 'bg-warning'}`}>
+          <div className={`card ft-stat-balance p-3 ${balance < 0 ? 'negative' : ''}`}>
             <h5><i className="bi bi-wallet2"></i> Balance</h5>
             <h2 className="mb-0">{currency(balance)}</h2>
           </div>
@@ -70,7 +85,7 @@ export default function Dashboard() {
             <div className="card-header"><h5 className="mb-0"><i className="bi bi-pie-chart"></i> Expenses by Category</h5></div>
             <div className="card-body">
               {labels.length > 0
-                ? <Pie data={chartData} />
+                ? <Pie data={chartData} options={chartOptions} />
                 : <p className="text-muted text-center">No expense data to display. Add some expenses to see the chart!</p>}
             </div>
           </div>

@@ -1,119 +1,105 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { getDashboard } from '../services/api';
-
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { getTransactions, deleteTransaction } from '../services/api';
 
 const currency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-const COLORS = [
-  'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
-  'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)',
-  'rgba(201, 203, 207, 0.8)', 'rgba(255, 99, 255, 0.8)', 'rgba(99, 255, 132, 0.8)', 'rgba(132, 99, 255, 0.8)'
-];
-
-export default function Dashboard() {
-  const [data, setData] = useState(null);
+export default function Transactions() {
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [confirmId, setConfirmId] = useState(null); // id pending delete confirmation
 
-  useEffect(() => {
-    getDashboard().then(res => setData(res.data)).finally(() => setLoading(false));
-  }, []);
+  const load = () => {
+    setLoading(true);
+    getTransactions().then(res => setTransactions(res.data.transactions)).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleDelete = async (id) => {
+    await deleteTransaction(id);
+    setConfirmId(null);
+    load();
+  };
 
   if (loading) return <p className="text-center">Loading...</p>;
-  if (!data) return <p className="text-center text-danger">Failed to load dashboard.</p>;
-
-  const { transactions, totalIncome, totalExpenses, balance, expensesByCategory } = data;
-  const labels = Object.keys(expensesByCategory);
-  const values = Object.values(expensesByCategory);
-
-  const chartData = {
-    labels,
-    datasets: [{
-      data: values,
-      backgroundColor: COLORS.slice(0, labels.length),
-      borderWidth: 2
-    }]
-  };
 
   return (
     <>
-      <h2 className="mb-4"><i className="bi bi-speedometer2"></i> Dashboard</h2>
-
-      <div className="row mb-4">
-        <div className="col-md-4">
-          <div className="card bg-success text-white p-3">
-            <h5><i className="bi bi-arrow-up-circle"></i> Total Income</h5>
-            <h2 className="mb-0">{currency(totalIncome)}</h2>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card bg-danger text-white p-3">
-            <h5><i className="bi bi-arrow-down-circle"></i> Total Expenses</h5>
-            <h2 className="mb-0">{currency(totalExpenses)}</h2>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className={`card text-white p-3 ${balance >= 0 ? 'bg-primary' : 'bg-warning'}`}>
-            <h5><i className="bi bi-wallet2"></i> Balance</h5>
-            <h2 className="mb-0">{currency(balance)}</h2>
-          </div>
-        </div>
-      </div>
-
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-header"><h5 className="mb-0"><i className="bi bi-pie-chart"></i> Expenses by Category</h5></div>
-            <div className="card-body">
-              {labels.length > 0
-                ? <Pie data={chartData} />
-                : <p className="text-muted text-center">No expense data to display. Add some expenses to see the chart!</p>}
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-6">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="mb-0"><i className="bi bi-clock-history"></i> Recent Transactions</h5>
-              <Link to="/transactions" className="btn btn-sm btn-primary">View All</Link>
-            </div>
-            <div className="card-body">
-              {transactions.length > 0 ? (
-                <div className="list-group">
-                  {transactions.map(t => (
-                    <div className="list-group-item" key={t._id}>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                          <h6 className="mb-1">{t.description}</h6>
-                          <small className="text-muted">
-                            <i className="bi bi-tag"></i> {t.category} • <i className="bi bi-calendar"></i> {formatDate(t.date)}
-                          </small>
-                        </div>
-                        <span className={`badge fs-6 ${t.type === 'income' ? 'bg-success' : 'bg-danger'}`}>
-                          {t.type === 'income' ? '+' : '-'}{currency(t.amount)}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted text-center">No transactions yet. <Link to="/transactions/add">Add your first transaction</Link></p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="text-center">
-        <Link to="/transactions/add" className="btn btn-primary btn-lg">
-          <i className="bi bi-plus-circle"></i> Add New Transaction
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2><i className="bi bi-list-ul"></i> My Transactions</h2>
+        <Link to="/transactions/add" className="btn btn-primary">
+          <i className="bi bi-plus-circle"></i> Add Transaction
         </Link>
       </div>
+
+      {transactions.length === 0 ? (
+        <div className="alert alert-info text-center">
+          No transactions found. <Link to="/transactions/add">Add your first transaction</Link>
+        </div>
+      ) : (
+        <div className="card">
+          <div className="card-body table-responsive">
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th><th>Type</th><th>Category</th><th>Description</th>
+                  <th className="text-end">Amount</th><th className="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map(t => (
+                  <tr key={t._id}>
+                    <td>{formatDate(t.date)}</td>
+                    <td>
+                      <span className={`badge ${t.type === 'income' ? 'bg-success' : 'bg-danger'}`}>
+                        <i className={`bi bi-arrow-${t.type === 'income' ? 'up' : 'down'}-circle`}></i> {t.type === 'income' ? 'Income' : 'Expense'}
+                      </span>
+                    </td>
+                    <td>{t.category}</td>
+                    <td>{t.description}</td>
+                    <td className="text-end">
+                      <strong className={t.type === 'income' ? 'text-success' : 'text-danger'}>
+                        {t.type === 'income' ? '+' : '-'}{currency(t.amount)}
+                      </strong>
+                    </td>
+                    <td className="text-center">
+                      <Link to={`/transactions/edit/${t._id}`} className="btn btn-sm btn-warning me-1">
+                        <i className="bi bi-pencil"></i>
+                      </Link>
+                      <button className="btn btn-sm btn-danger" onClick={() => setConfirmId(t._id)}>
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation modal */}
+      {confirmId && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Delete</h5>
+                <button className="btn-close" onClick={() => setConfirmId(null)}></button>
+              </div>
+              <div className="modal-body">
+                Are you sure you want to delete this transaction?
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setConfirmId(null)}>Cancel</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(confirmId)}>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
