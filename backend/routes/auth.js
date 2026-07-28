@@ -92,8 +92,9 @@ router.get('/verify-email', async (req, res) => {
     }
 
     user.isVerified = true;
-    user.verificationTokenHash = undefined;
-    user.verificationTokenExpires = undefined;
+    // Intentionally NOT clearing the token/expiry here — leaving it in place
+    // (until it naturally expires) makes repeat requests with the same token
+    // idempotent instead of erroring on a second click or a duplicate request.
     await user.save();
 
     res.json({ message: 'Email verified successfully. You can now log in.' });
