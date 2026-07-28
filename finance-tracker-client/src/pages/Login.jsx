@@ -1,23 +1,38 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { githubLoginUrl } from '../services/api';
+import { githubLoginUrl, resendVerification } from '../services/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [unverified, setUnverified] = useState(false);
+  const [resendStatus, setResendStatus] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setUnverified(false);
+    setResendStatus('');
     try {
       await login({ email, password });
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
+      if (err.response?.data?.unverified) setUnverified(true);
+    }
+  };
+
+  const handleResend = async () => {
+    setResendStatus('Sending...');
+    try {
+      const res = await resendVerification(email);
+      setResendStatus(res.data.message);
+    } catch {
+      setResendStatus('Something went wrong. Please try again.');
     }
   };
 
@@ -28,7 +43,19 @@ export default function Login() {
           <div className="card-body p-5">
             <h2 className="text-center mb-4"><i className="bi bi-box-arrow-in-right"></i> Login</h2>
 
-            {error && <div className="alert alert-danger">{error}</div>}
+            {error && (
+              <div className="alert alert-danger">
+                {error}
+                {unverified && (
+                  <div className="mt-2">
+                    <button type="button" className="btn btn-sm btn-outline-light" onClick={handleResend}>
+                      Resend verification email
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {resendStatus && <div className="alert alert-info">{resendStatus}</div>}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
@@ -37,7 +64,10 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)} required />
               </div>
               <div className="mb-3">
-                <label className="form-label">Password</label>
+                <div className="d-flex justify-content-between">
+                  <label className="form-label">Password</label>
+                  <Link to="/forgot-password" className="small">Forgot password?</Link>
+                </div>
                 <input type="password" className="form-control" value={password}
                   onChange={(e) => setPassword(e.target.value)} required />
               </div>

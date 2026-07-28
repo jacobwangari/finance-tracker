@@ -1,4 +1,17 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+// Used for email verification & password reset links. The raw token goes in the
+// email link; only its hash is stored in the DB, so a leaked database can't be
+// used to forge working links (same principle as password hashing).
+const generateSecureToken = () => {
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+  return { rawToken, tokenHash };
+};
+
+const hashToken = (rawToken) =>
+  crypto.createHash('sha256').update(rawToken).digest('hex');
 
 const signAccessToken = (user) =>
   jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
@@ -17,4 +30,4 @@ const refreshCookieOptions = {
   path: '/api/auth' // only sent to auth routes, not every request
 };
 
-module.exports = { signAccessToken, signRefreshToken, refreshCookieOptions };
+module.exports = { signAccessToken, signRefreshToken, refreshCookieOptions, generateSecureToken, hashToken };

@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getTransactions, deleteTransaction } from '../services/api';
-
-const currency = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-const formatDate = (d) => new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+import { formatCurrency as currency, formatDate } from '../utils/format';
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);

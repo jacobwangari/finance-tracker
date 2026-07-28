@@ -42,17 +42,4 @@ router.get('/dashboard', ensureAuth, async (req, res) => {
   }
 });
 
-// GET /api/public-transactions
-router.get('/public-transactions', async (req, res) => {
-  try {
-    const transactions = await Transaction.find()
-      .populate('user', 'name')
-      .sort({ date: -1 })
-      .lean();
-    res.json({ transactions });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 module.exports = router;

@@ -55,6 +55,10 @@ export const logoutUser = () => api.post('/auth/logout');
 export const refreshAccessToken = () => api.post('/auth/refresh');
 export const getCurrentUser = () => api.get('/auth/me');
 export const githubLoginUrl = `${API_URL}/auth/github`;
+export const verifyEmail = (token) => api.get(`/auth/verify-email?token=${token}`);
+export const resendVerification = (email) => api.post('/auth/resend-verification', { email });
+export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
+export const resetPassword = (data) => api.post('/auth/reset-password', data);
 
 // ---- Dashboard ----
 export const getDashboard = () => api.get('/dashboard');

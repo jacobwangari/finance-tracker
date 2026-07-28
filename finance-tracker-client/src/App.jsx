@@ -11,8 +11,10 @@ import Dashboard from './pages/Dashboard';
 import Transactions from './pages/Transactions';
 import AddTransaction from './pages/AddTransaction';
 import EditTransaction from './pages/EditTransaction';
-import PublicTransactions from './pages/PublicTransactions';
 import OAuthCallback from './pages/OAuthCallback';
+import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -25,8 +27,10 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/public-transactions" element={<PublicTransactions />} />
               <Route path="/oauth-callback" element={<OAuthCallback />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="/dashboard"
                 element={<PrivateRoute><Dashboard /></PrivateRoute>}

@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { githubLoginUrl } from '../services/api';
 
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', password2: '' });
   const [errors, setErrors] = useState([]);
+  const [successMessage, setSuccessMessage] = useState('');
   const { register } = useAuth();
-  const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -15,12 +15,29 @@ export default function Register() {
     e.preventDefault();
     setErrors([]);
     try {
-      await register(form);
-      navigate('/dashboard');
+      const res = await register(form);
+      setSuccessMessage(res.message);
     } catch (err) {
       setErrors(err.response?.data?.errors || ['Registration failed']);
     }
   };
+
+  if (successMessage) {
+    return (
+      <div className="row justify-content-center">
+        <div className="col-md-6 col-lg-5">
+          <div className="card shadow text-center">
+            <div className="card-body p-5">
+              <i className="bi bi-envelope-check ft-icon-income" style={{ fontSize: '3rem' }}></i>
+              <h3 className="mt-3">Check your inbox</h3>
+              <p className="text-muted">{successMessage}</p>
+              <Link to="/login" className="btn btn-primary mt-2">Go to Login</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="row justify-content-center">

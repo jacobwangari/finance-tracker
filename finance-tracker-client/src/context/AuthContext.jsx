@@ -34,11 +34,11 @@ export function AuthProvider({ children }) {
     return res.data.user;
   };
 
+  // Registration now returns a "check your email" message rather than a token —
+  // the account is unverified until the user clicks the confirmation link.
   const register = async (data) => {
     const res = await registerUser(data);
-    setAccessToken(res.data.accessToken);
-    setUser(res.data.user);
-    return res.data.user;
+    return res.data;
   };
 
   // Used by the GitHub OAuth callback page — access token arrives via URL,

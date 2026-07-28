@@ -25,7 +25,27 @@ const UserSchema = new mongoose.Schema({
   refreshToken: {
     type: String,
     default: null,
-    select: false // never returned by default queries
+    select: false
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationTokenHash: {
+    type: String,
+    select: false
+  },
+  verificationTokenExpires: {
+    type: Date,
+    select: false
+  },
+  resetPasswordTokenHash: {
+    type: String,
+    select: false
+  },
+  resetPasswordExpires: {
+    type: Date,
+    select: false
   },
   createdAt: {
     type: Date,
