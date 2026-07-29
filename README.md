@@ -2,10 +2,10 @@
 
 A full-stack personal finance management application built to give users a private, secure place to track income and expenses — with production-grade authentication, not just a login form.
 
-**Live App:** [https://finance-tracker-snowy-chi.vercel.app/]
-**API:** [https://finance-tracker-backend-g9rq.onrender.com/]
+**Live App:** [https://finance-tracker-snowy-chi.vercel.app/](https://finance-tracker-snowy-chi.vercel.app/)
+**API:** [https://finance-tracker-backend-g9rq.onrender.com](https://finance-tracker-backend-g9rq.onrender.com)
 
-![Dashboard preview](./docs/dashboard-preview.png)
+![Dashboard preview](./docs/dashboard.png)
 
 ---
 
@@ -125,7 +125,7 @@ On load, the app exchanges the refresh cookie for a fresh access token before re
 
 | Add Transaction | Password Reset |
 |---|---|
-| ![Add Transaction](./docs/add-transaction.png) | ![Reset Password](./docs/reset-password.png) |
+| ![Add Transaction](./docs/add-transaction.png) | ![Reset Password](./docs/password-reset.png) |
 
 ## Getting Started
 
@@ -139,8 +139,8 @@ On load, the app exchanges the refresh cookie for a fresh access token before re
 ### Backend
 
 ```bash
-git clone https://github.com/yourusername/finance-tracker.git
-cd finance-tracker
+git clone https://github.com/jacobwangari/finance-tracker.git
+cd finance-tracker/backend
 npm install
 ```
 
@@ -155,8 +155,7 @@ API runs at `http://localhost:3000`.
 ### Frontend
 
 ```bash
-git clone https://github.com/yourusername/finance-tracker-client.git
-cd finance-tracker-client
+cd finance-tracker/finance-tracker-client
 npm install
 ```
 
@@ -221,33 +220,42 @@ All routes are prefixed with `/api`. Protected routes require `Authorization: Be
 
 ## Project Structure
 
-```
-finance-tracker/                 # Backend
-├── config/          # DB connection, Passport strategies
-├── middleware/       # JWT auth guard
-├── models/           # User, Transaction schemas
-├── routes/           # auth, transactions, dashboard
-├── utils/            # token generation, email sending
-└── app.js
+Single repository, two independent apps living side by side:
 
-finance-tracker-client/          # Frontend
-├── src/
-│   ├── components/   # Navbar, Footer, PrivateRoute, TransactionForm
-│   ├── context/       # AuthContext
-│   ├── pages/         # Home, Login, Register, Dashboard, Transactions,
-│   │                  #   AddTransaction, EditTransaction, VerifyEmail,
-│   │                  #   ForgotPassword, ResetPassword, OAuthCallback
-│   ├── services/      # api.js (axios + interceptors), tokenStore.js
-│   └── utils/          # currency/date formatting
 ```
+finance-tracker/
+├── backend/                    # Express API
+│   ├── config/          # DB connection, Passport strategies
+│   ├── middleware/       # JWT auth guard
+│   ├── models/           # User, Transaction schemas
+│   ├── routes/           # auth, transactions, dashboard
+│   ├── utils/            # token generation, email sending
+│   ├── app.js
+│   └── package.json
+│
+└── finance-tracker-client/     # React frontend
+    ├── src/
+    │   ├── components/   # Navbar, Footer, PrivateRoute, TransactionForm
+    │   ├── context/       # AuthContext
+    │   ├── pages/         # Home, Login, Register, Dashboard, Transactions,
+    │   │                  #   AddTransaction, EditTransaction, VerifyEmail,
+    │   │                  #   ForgotPassword, ResetPassword, OAuthCallback
+    │   ├── services/      # api.js (axios + interceptors), tokenStore.js
+    │   └── utils/          # currency/date formatting
+    └── package.json
+```
+
+Each folder has its own `package.json`, `node_modules`, and `.env` — they're deployed independently (backend to Render, frontend to Vercel) even though they share one repo.
 
 ## Deployment
 
 | Layer | Platform | Notes |
 |---|---|---|
-| API | [Render](https://render.com) | Web Service; env vars set in dashboard |
-| Frontend | [Vercel](https://vercel.com) | Vite static build; `VITE_API_URL` points to the Render API |
+| API | [Render](https://render.com) | Web Service; **Root Directory** set to `backend`; env vars set in dashboard |
+| Frontend | [Vercel](https://vercel.com) | **Root Directory** set to `finance-tracker-client`; Vite static build; `VITE_API_URL` points to the Render API |
 | Database | [MongoDB Atlas](https://www.mongodb.com) | Network access configured for Render's egress |
+
+Since both apps live in one repository, each platform needs to be pointed at the correct subfolder rather than the repo root — Render's "Root Directory" and Vercel's "Root Directory" project settings both need to be set explicitly, or the build will fail looking for `package.json` in the wrong place.
 
 In production, `NODE_ENV=production` switches the refresh cookie to `Secure` + `SameSite=None`, which requires HTTPS on both ends (provided by default on Render and Vercel). `CLIENT_URL` and `VITE_API_URL` point at each other's live URLs, and the GitHub OAuth App's callback URL is updated to match the deployed API.
 
@@ -265,19 +273,8 @@ Two standalone scripts (not part of the running app) live at the backend root fo
 - **Generic error responses matter.** Password reset and resend-verification both return identical responses whether or not the email exists — a small detail, but it's the difference between "helpful" and "an account enumeration vulnerability."
 - **React 18 `StrictMode` will double-fire your effects in development.** A one-time-use verification token deleted on first success looked like a broken expiry system, when the real issue was a duplicate request racing the first. Worth designing single-use-token endpoints to be idempotent rather than assuming exactly-once delivery.
 
-## Roadmap
-
-- [ ] Multi-device session management ("log out everywhere")
-- [ ] Budget limits with threshold alerts per category
-- [ ] CSV export of transaction history
-- [ ] Recurring transactions
-- [ ] Rate limiting on auth endpoints
-
-## License
-
-MIT
 
 ## Author
 
-**[Your Name]**
-[Portfolio](https://yourportfolio.com) · [GitHub](https://github.com/yourusername) · [LinkedIn](https://linkedin.com/in/yourusername)
+**Jacmwas**
+[Portfolio](https://my-portifolio-tau-rosy.vercel.app/) · [GitHub](https://github.com/jacobwangari)
