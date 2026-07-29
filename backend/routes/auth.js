@@ -54,14 +54,17 @@ router.post('/register', async (req, res) => {
         return res.status(400).json({ errors: ['Email is already registered'] });
       }
 
-      // Account exists but was never verified (e.g. the confirmation email
-      // failed to send last time) — resend instead of dead-ending the user.
       const { rawToken, tokenHash } = generateSecureToken();
       existingUser.verificationTokenHash = tokenHash;
       existingUser.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
       await existingUser.save();
 
-      await sendVerificationEmail(existingUser, rawToken);
+      // Don't let a slow/failed SMTP connection turn into a 500 — the account
+      // state is already correct either way, and the user can hit "resend" if needed.
+      sendVerificationEmail(existingUser, rawToken).catch(err =>
+        console.error('Failed to send verification email:', err.message)
+      );
+
       return res.status(200).json({
         message: 'This email is already registered but unverified. We\'ve sent a new confirmation link.'
       });
@@ -79,7 +82,10 @@ router.post('/register', async (req, res) => {
       verificationTokenExpires: Date.now() + 24 * 60 * 60 * 1000 // 24h
     });
 
-    await sendVerificationEmail(newUser, rawToken);
+    // Same reasoning: registration succeeds regardless of email deliverability.
+    sendVerificationEmail(newUser, rawToken).catch(err =>
+      console.error('Failed to send verification email:', err.message)
+    );
 
     res.status(201).json({
       message: 'Account created. Please check your email to confirm your account before logging in.'
@@ -141,7 +147,9 @@ router.post('/resend-verification', async (req, res) => {
     user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
     await user.save();
 
-    await sendVerificationEmail(user, rawToken);
+    sendVerificationEmail(user, rawToken).catch(err =>
+      console.error('Failed to send verification email:', err.message)
+    );
     res.json(genericResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -186,7 +194,9 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save();
 
-    await sendPasswordResetEmail(user, rawToken);
+    sendPasswordResetEmail(user, rawToken).catch(err =>
+      console.error('Failed to send password reset email:', err.message)
+    );
     res.json(genericResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
