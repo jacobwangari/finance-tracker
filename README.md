@@ -2,8 +2,8 @@
 
 A full-stack personal finance management application built to give users a private, secure place to track income and expenses — with production-grade authentication, not just a login form.
 
-**Live App:** [https://your-app.vercel.app](https://your-app.vercel.app)
-**API:** [https://your-api.onrender.com](https://your-api.onrender.com)
+**Live App:** [https://finance-tracker-snowy-chi.vercel.app/]
+**API:** [https://finance-tracker-backend-g9rq.onrender.com/]
 
 ![Dashboard preview](./docs/dashboard-preview.png)
 
@@ -113,6 +113,8 @@ On load, the app exchanges the refresh cookie for a fresh access token before re
 
 **Password reset.** Follows the same hashed-token pattern, with a 1-hour expiry. Requesting a reset for an email that isn't registered returns the same response as a successful request, to avoid leaking which addresses have accounts. Successfully resetting a password also invalidates any existing refresh token, forcing re-authentication.
 
+**Idempotent verification.** Email confirmation is safe to trigger more than once with the same link — verifying an already-verified account succeeds quietly rather than erroring. This matters in practice: React 18's `StrictMode` double-invokes effects in development, and users occasionally click a confirmation link twice. Neither should surface a false "invalid or expired" error, so the verification token isn't deleted on success — only on expiry or when a new one is issued.
+
 **Data isolation.** Every transaction query is scoped server-side to `req.user.id` — there's no client-supplied identifier that could be swapped to access someone else's data, and no shared/public view of any user's transactions.
 
 ## Screenshots
@@ -178,7 +180,7 @@ App runs at `http://localhost:5173`.
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | GitHub OAuth App credentials |
 | `GITHUB_CALLBACK_URL` | e.g. `http://localhost:3000/api/auth/github/callback` |
 | `CLIENT_URL` | Frontend URL — used for CORS and email links |
-| `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_USER` / `EMAIL_PASS` / `EMAIL_FROM` | SMTP config for verification and reset emails |
+| `EMAIL_HOST` / `EMAIL_PORT` / `EMAIL_USER` / `EMAIL_PASS` / `EMAIL_FROM` | SMTP config for verification and reset emails — works with Gmail (via an [App Password](https://myaccount.google.com/apppasswords), not your normal password) or a transactional provider like Resend/Mailgun |
 | `PORT` | Defaults to `3000` |
 | `NODE_ENV` | `development` or `production` — controls cookie security flags |
 
@@ -208,7 +210,6 @@ All routes are prefixed with `/api`. Protected routes require `Authorization: Be
 | `GET` | `/auth/github` / `/auth/github/callback` | No | GitHub OAuth flow |
 
 ### Transactions
-
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
 | `GET` | `/transactions` | Yes | List the current user's transactions |
@@ -250,11 +251,19 @@ finance-tracker-client/          # Frontend
 
 In production, `NODE_ENV=production` switches the refresh cookie to `Secure` + `SameSite=None`, which requires HTTPS on both ends (provided by default on Render and Vercel). `CLIENT_URL` and `VITE_API_URL` point at each other's live URLs, and the GitHub OAuth App's callback URL is updated to match the deployed API.
 
+## Development Scripts
+
+Two standalone scripts (not part of the running app) live at the backend root for local debugging — neither is deployed or committed with real credentials:
+
+- **`test-email.js`** — verifies SMTP credentials and sends a test email directly, bypassing the app entirely. Useful for isolating "is my email config wrong" from "is my app logic wrong."
+- **`clear-db.js`** — drops every collection in the connected MongoDB database for a clean slate during development. Deliberately has no confirmation prompt, so double-check `MONGODB_URI` before running it.
+
 ## Lessons Learned
 
 - **Cross-domain cookies are unforgiving.** Getting `SameSite`, `Secure`, and cookie `path` right — and understanding *why* `localhost:3000` and `localhost:5173` behave as same-site while Render and Vercel don't — was the most instructive part of this build.
 - **Token rotation adds real complexity for real security.** A single long-lived JWT is much simpler to reason about, but rotating refresh tokens with server-side tracking closes a meaningful replay-attack window for a modest amount of extra code.
 - **Generic error responses matter.** Password reset and resend-verification both return identical responses whether or not the email exists — a small detail, but it's the difference between "helpful" and "an account enumeration vulnerability."
+- **React 18 `StrictMode` will double-fire your effects in development.** A one-time-use verification token deleted on first success looked like a broken expiry system, when the real issue was a duplicate request racing the first. Worth designing single-use-token endpoints to be idempotent rather than assuming exactly-once delivery.
 
 ## Roadmap
 

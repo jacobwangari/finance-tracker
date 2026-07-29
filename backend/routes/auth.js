@@ -48,7 +48,24 @@ router.post('/register', async (req, res) => {
 
   try {
     const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) return res.status(400).json({ errors: ['Email is already registered'] });
+
+    if (existingUser) {
+      if (existingUser.isVerified) {
+        return res.status(400).json({ errors: ['Email is already registered'] });
+      }
+
+      // Account exists but was never verified (e.g. the confirmation email
+      // failed to send last time) — resend instead of dead-ending the user.
+      const { rawToken, tokenHash } = generateSecureToken();
+      existingUser.verificationTokenHash = tokenHash;
+      existingUser.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
+      await existingUser.save();
+
+      await sendVerificationEmail(existingUser, rawToken);
+      return res.status(200).json({
+        message: 'This email is already registered but unverified. We\'ve sent a new confirmation link.'
+      });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const { rawToken, tokenHash } = generateSecureToken();
